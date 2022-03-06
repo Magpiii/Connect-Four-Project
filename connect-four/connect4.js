@@ -9,7 +9,7 @@ let WIDTH = 7;
 let HEIGHT = 6;
 
 let currPlayer = 1; // active player: 1 or 2
-const board = []; // array of rows, each row is array of cells  (board[y][x])
+let board = []; // array of rows, each row is array of cells  (board[y][x])
 
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
@@ -18,7 +18,11 @@ const board = []; // array of rows, each row is array of cells  (board[y][x])
 function makeBoard() {
   // TODO: set "board" to empty HEIGHT x WIDTH matrix array
 
-  board = [HEIGHT] * [WIDTH];
+  for (let i = 0; i < HEIGHT; i++) {
+    //Source: (https://stackoverflow.com/questions/4852017/how-to-initialize-an-arrays-length-in-javascript, accessed 5 March 2022)
+    board.push(Array.apply(null, Array(WIDTH)).map(function () {}));
+  }
+  
 }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -56,9 +60,15 @@ function makeHtmlBoard() {
     // 
     for (var x = 0; x < WIDTH; x++) {
       const cell = document.createElement("td");
+      // Set the id of the cell to the y coordinate minus the x coordinate
+      // (both increment by one each time their respective for loop 
+      // executes). 
       cell.setAttribute("id", `${y}-${x}`);
+      // Append cell to table row. 
       row.append(cell);
     }
+    // Append each row to the HTML table until the max defined height is 
+    // reached.
     htmlBoard.append(row);
   }
 }
@@ -74,12 +84,17 @@ function findSpotForCol(x) {
 
 function placeInTable(y, x) {
   // TODO: make a div and insert into correct table cell
+
+  let div = document.createElement('div');
+  div.setAttribute('class', 'piece p1');
+
+
 }
 
 /** endGame: announce game end */
 
 function endGame(msg) {
-  // TODO: pop up alert message
+  alert(`Game over! ${currPlayer} wins!'`);
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -105,9 +120,18 @@ function handleClick(evt) {
 
   // check for tie
   // TODO: check if all cells in board are filled; if so call, call endGame
+  
+  // Source: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every, accessed 5 March 2022)
+  if (board.every(!undefined && !null)) {
+    endGame();
+  }
 
   // switch players
-  // TODO: switch currPlayer 1 <-> 2
+  if (currPlayer = 1) {
+    currPlayer = 2;
+  } else {
+    currPlayer = 1;
+  }
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
