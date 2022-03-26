@@ -77,7 +77,12 @@ function makeHtmlBoard() {
 
 function findSpotForCol(x) {
   // TODO: write the real version of this, rather than always returning 0
-  return 0;
+  for (let y = HEIGHT - 1; y >= 0; y--) {
+    if (!board[y][x]) {
+      return y;
+    }
+  }
+  return null;
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
@@ -85,10 +90,12 @@ function findSpotForCol(x) {
 function placeInTable(y, x) {
   // TODO: make a div and insert into correct table cell
 
-  let div = document.createElement('div');
-  div.setAttribute('class', 'piece p1');
+  const div = document.createElement('div');
+  div.classList.add('piece');
+  div.classList.add(`p${currPlayer}`);
 
-
+  const clickPoint = document.getElementById(`${y}-${x}`);
+  clickPoint.append(div);
 }
 
 /** endGame: announce game end */
@@ -111,6 +118,7 @@ function handleClick(evt) {
 
   // place piece in board and add to HTML table
   // TODO: add line to update in-memory board
+  board[y][x] = currPlayer;
   placeInTable(y, x);
 
   // check for win
@@ -122,8 +130,10 @@ function handleClick(evt) {
   // TODO: check if all cells in board are filled; if so call, call endGame
   
   // Source: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every, accessed 5 March 2022)
-  if (board.every(!undefined && !null)) {
-    endGame();
+  // Check if every cell contains a filled cell and every row contains all
+  // filled cells. 
+  if (board.every(row => row.every(cell => cell))) {
+    alert('Game over: it\'s a tie!');
   }
 
   // switch players
@@ -154,13 +164,21 @@ function checkForWin() {
 
   // TODO: read and understand this code. Add comments to help you.
 
+  // Iterate for each column of the board. 
   for (var y = 0; y < HEIGHT; y++) {
+    // Iterate for each row of the board. 
     for (var x = 0; x < WIDTH; x++) {
+      // Add one to x to continue adding onto the x axis of the board. 
       var horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+      // Add one to y to continue adding onto the y axis of the board. 
       var vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      // Each pair goes diagonally to the right (ascending).  
       var diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+      // Each pair goes diagonally to the left (decending). 
       var diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
+      // Pass each win condition into the win method of the checkForWin()
+      // function. 
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
         return true;
       }
